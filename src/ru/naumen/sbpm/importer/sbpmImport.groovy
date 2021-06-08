@@ -15,30 +15,21 @@ import com.google.gson.GsonBuilder
 import groovy.transform.Field
 
 class CreatorList{
-    Map<String, List<Bpm>> database = [:]
+    Map<String, List<Bpm>> database  = [:]
+
     def get(String mc, Map<String,Object> map){
-        return database[mc].find{
-            def res = true
-            map.each{
-                k,v ->
-                    if(it[k]!=v){
-                        res = false
-                        return
-                    }
-            }
-            return  res
+        return database[mc]?.find{ it ->
+            map.every{ k, v -> it[k] == v }
         }?.obj
     }
 
     def add(Bpm element){
-        def list = []
         String key = element.mc.toString()
-        if( database.keySet().contains(key)){
-            list = database[key]
-        }else{
-            database[key] = list
+        if (!database.containsKey(key))
+        {
+            database.put(key, [])
         }
-        list.add(element)
+        database.get(key).add(element)
     }
 
 
@@ -63,8 +54,8 @@ def importCatalog(List<CatalogsElement> catalog, def parent = null) {
                     creatorList.add(element)
                 }
             } catch (Exception e) {
-                String msg = element.getExceptionString(e.message)
-                throw new Exception(msg)
+                logger.error("BPM IMPORT:  ${e.message}",e)
+                throw new Exception(element.getExceptionString(e.message))
 
             }
             if (element.file) {
@@ -82,8 +73,8 @@ def importIcon(CatalogsElement element, def elementObj) {
         }
         utils.attachFile(elementObj, 'icon', element.file.title, 'image/png', '', element.file.data)
     } catch (Exception e) {
-        String msg = element.getIconExceptionString(e.message)
-        throw new Exception(msg)
+        logger.error("BPM IMPORT:  ${e.message}",e)
+        throw new Exception(element.getIconExceptionString(e.message))
     }
 }
 
@@ -112,11 +103,16 @@ Clazz importClazz(Clazz clazz, def parent = null) {
         ks ->
             importClazz(ks, clazzObj)
     }
-    return (!api.metainfo.metaClassExists(clazz.metaCode))
-            ? Clazz.fromObjectLite(createClazzObj)
-            :(createAttrs?.size() > 0 || createStates?.size() > 0 || (kases)?.size()>0)
-            ?Clazz.fromObject(clazzObj,createAttrs,createStates,kases)
-            :null
+
+    if (!api.metainfo.metaClassExists(clazz.metaCode))
+    {
+        return Clazz.fromObjectLite(createClazzObj);
+    }
+    else if (createAttrs?.size() > 0 || createStates?.size() > 0 || (kases)?.size()>0)
+    {
+        return Clazz.fromObject(clazzObj,createAttrs,createStates,kases)
+    }
+    return null
 }
 
 List<Attribute> importAttributes(List<Attribute> attrs, def clazzObj) {
@@ -158,6 +154,7 @@ def importActiveStates(Clazz clazz, def clazzObj) {
         utils.editWithoutEventActions(clazzObj, ['activeStates': activeStates])
 
     } catch (Exception e) {
+        logger.error("BPM IMPORT:  ${e.message}",e)
         throw new Exception(clazz.getActiveStatesExceptionString(e.message))
     }
 
@@ -178,6 +175,7 @@ def importResolutionCode(List<ResolutionCode> rcList) {
                 }
 
             } catch (Exception e) {
+                logger.error("BPM IMPORT:  ${e.message}",e)
                 throw new Exception(rc.getExceptionString(e.message))
             }
     }
@@ -197,6 +195,7 @@ def importEvent(List<Event> eventList) {
                 }
 
             } catch (Exception e) {
+                logger.error("BPM IMPORT:  ${e.message}",e)
                 throw new Exception(ev.getExceptionString(e.message))
             }
     }
@@ -218,6 +217,7 @@ def importStateEvent(List<StateEvent> eventList) {
                 }
 
             } catch (Exception e) {
+                logger.error("BPM IMPORT:  ${e.message}",e)
                 throw new Exception(ev.getExceptionString(e.message))
             }
     }
@@ -255,6 +255,7 @@ def importAttrKaseToKase(List<AttrKaseToKase> listAttrKToK) {
                 }
 
             } catch (Exception e) {
+                logger.error("BPM IMPORT:  ${e.message}",e)
                 throw new Exception(attrKTok.getExceptionString(e.message))
             }
     }
@@ -268,6 +269,7 @@ def importRoute(Route route, def routeObj) {
     try {
         obj = utils.editWithoutEventActions(routeObj, Route.getEditor(resolutionCode,baseKase, resultAttr))
     } catch (Exception e) {
+        logger.error("BPM IMPORT:  ${e.message}",e)
         throw new Exception(route.getExceptionString(e.message))
     }
 }
@@ -397,6 +399,7 @@ def metaStorageUpdater(def obj, MetaStorageAbstract meta, def parent = null) {
 
         }
     } catch (Exception e) {
+        logger.error("BPM IMPORT:  ${e.message}",e)
         throw new Exception(meta.getExceptionString(e.message))
 
     }
@@ -410,6 +413,7 @@ def routeCreator( RouteAbstract meta, List creator, String title) {
         meta.obj = obj
         creatorList.add(meta)
     } catch (Exception e) {
+        logger.error("BPM IMPORT:  ${e.message}",e)
         throw new Exception(meta.getExceptionString(e.message))
 
     }

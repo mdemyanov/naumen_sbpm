@@ -29,7 +29,7 @@ abstract class MetaStorageAbstract extends Bpm{
 
     String getExceptionString(String message) {
         return """Ошибка! При редактировании/создании 
-объекта  "${title}(${metaCode})" метакласса ${mc.code} возникла ошибка:
+объекта  "${title}(${metaCode})" метакласса ${mc?.code} возникла ошибка:
 ${message}."""
     }
 }
@@ -41,7 +41,7 @@ abstract class  RouteAbstract extends  Bpm{
 
     String getExceptionString(String message){
         return """Ошибка! При создании 
-${title ? title : ''}(${internalId}) метакласса ${mc.code} возникла ошибка:
+${title ? title : ''}(${internalId}) метакласса ${mc?.code} возникла ошибка:
 ${message}."""
     }
 }
@@ -120,7 +120,7 @@ class Clazz extends MetaStorageAbstract {
         return obj ? new Clazz(
                 mc: obj.metaClass,
                 metaCode: obj.metaCode,
-                title:  obj?.title
+                title:  obj.title
         ) : null
     }
 
@@ -305,7 +305,7 @@ class ResolutionCode extends Bpm{
 
     String getExceptionString(String message){
         return """Ошибка! При редактировании/создании элемента "${title}"(${code})
- в  справочнике "Коды решения"(${mc.code}) возникла ошибка: ${message}."""
+ в  справочнике "Коды решения"(${mc?.code}) возникла ошибка: ${message}."""
     }
 }
 
@@ -351,7 +351,7 @@ class Event extends Bpm{
 
     String getExceptionString(String message){
         return """Ошибка! При редактировании/создании элемента "${title}"(${code}) 
-                        в  справочнике "События"(${mc.code}) возникла ошибка: ${message}."""
+                        в  справочнике "События"(${mc?.code}) возникла ошибка: ${message}."""
     }
 }
 
@@ -401,7 +401,7 @@ class StateEvent extends Event {
 
     String getExceptionString(String message){
         return """Ошибка! При редактировании/создании элемента "${title}"(${code}) 
-                        в  справочнике "События. Смена статуса"(${mc.code}) возникла ошибка: ${message}."""
+                        в  справочнике "События. Смена статуса"(${mc?.code}) возникла ошибка: ${message}."""
     }
 }
 
@@ -426,7 +426,7 @@ class CatalogsElement extends Bpm{
 
 
     List getSearcher() {
-        return [mc.code, [code: code]]
+        return [mc?.code, [code: code]]
     }
 
     Map getEditor(def parent = null){
@@ -454,7 +454,7 @@ class CatalogsElement extends Bpm{
                 mc: obj.metaClass,
                 code :obj.code,
                 title : obj.title,
-                folder : obj?.folder,
+                folder : obj.folder,
                 color : obj.color,
                 children: children
         ) : null
@@ -469,13 +469,13 @@ class CatalogsElement extends Bpm{
 
     String getExceptionString(String message){
         return """Ошибка! При редактировании/создании 
-элемента каталога  "${title}(${code})" метакласса ${mc.code} возникла ошибка:
+элемента каталога  "${title}(${code})" метакласса ${mc?.code} возникла ошибка:
 ${message}."""
     }
 
     String getIconExceptionString(String message){
         return """Ошибка! При добавлении иконки к элементу  "${title}"
-справочника ${mc.code} возникла ошибка: ${message}."""
+справочника ${mc?.code} возникла ошибка: ${message}."""
     }
 
 }
@@ -497,7 +497,7 @@ class File{
 
 class AttrKaseToKase {
     //TODO: добавить mc ыефешс
-    static ClassFqn mc  = new ClassFqn('action$attrKaseToKase')//api.types.newClassFqn('action$attrKaseToKase')
+    static ClassFqn mc  = api.types.newClassFqn('action$attrKaseToKase') //new ClassFqn('action$attrKaseToKase')
     Clazz sourceKase
     Attribute sourceAttr
     // справочник actionType
@@ -610,7 +610,7 @@ class Route extends RouteAbstract{
                 mc: obj.metaClass,
                 internalId :obj.internalId,
                 title : obj.title,
-                externalId : obj?.externalId,
+                externalId : obj.externalId,
                 resolutionCode : obj.resolutionCode.collect{
                     rc -> ResolutionCode.fromObjectLite(rc)
                 },
@@ -629,7 +629,7 @@ class Route extends RouteAbstract{
 
     String getExceptionString(String message){
         return """Ошибка! При редактировании маршрута 
-${title}(${internalId})" метакласса ${mc.code} возникла ошибка:
+${title}(${internalId})" метакласса ${mc?.code} возникла ошибка:
 ${message}."""
     }
 }

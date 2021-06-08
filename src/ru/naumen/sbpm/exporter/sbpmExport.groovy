@@ -12,6 +12,7 @@ package ru.naumen.sbpm.exporter
 //Категория:
 import ru.naumen.sbpm.model.*
 //import ru.naumen.sbpm.importer.*
+import ru.naumen.core.server.script.api.DbApi$Query
 import ru.naumen.metainfo.shared.ClassFqn
 import com.google.gson.Gson //+
 import com.google.gson.GsonBuilder
@@ -61,7 +62,6 @@ List<CatalogsElement> exportCatalog(String mcStr, CatalogsElement parentEl = nul
  * @return список объектов завернутые в ОМ
  */
 List<Clazz> exportClazzes(String mcStr, Map dict = [:]){
-
     return utils.find(mcStr,dict).collect{
         clazz ->
             Clazz.fromObject(
@@ -190,34 +190,24 @@ Export export(def route = null){
     )
 }
 //Основной блок -------------------------------------------------
+return ''
 
-/* TODO
-        скрипт миграции для internal id маршрутов,
-        (проверить что везде)скрипт вычисления значения по умолчанию internal id
-        !! internal id у всех сущьностей внутри маршрута
-        переписать рекурсию
-        +разобраться с иконками
-        проверить файлик (как править ОМ на стенде)
-        настроить ОМ так, чтоб нельзя было редактировать id , но в интерфейсе видно.
-        +написать экспорт правую часть
+/*
+import ru.naumen.core.server.script.api.DbApi$Query
+
+def parent = utils.get('metaStorage$2283201')
+def dict = [:]//['parent':parent]
+def mcStr = 'metaStorage$kase'
+String paramsString = dict.keySet().collect{
+        k->
+            return "${k} = :${k}" //type = :type
+    }.join(' and ')
+
+String whereString = paramsString ? "where ${paramsString}" : ""
+
+//return """from ${mcStr} ${whereString}"""
+//def query = api.db.query("""from ${mcStr} ${whereString}""")
+def query = api.db.query('from metaStorage$kase where parent = :parent')
+query.set('parent',parent)
+return query.list().size()
  */
-
-import ru.naumen.sbpm.model.*
-
-import ru.naumen.metainfo.shared.ClassFqn
-import com.google.gson.Gson //+
-import com.google.gson.GsonBuilder
-
-Gson gson = new GsonBuilder()
-        .create()
-
-def route = utils.get('bpm$2287402')
-Export ex = modules.sbpmExport.export(route)
-def exportToJSON = gson.toJson(ex)
-//logger.error('КАТАЛОГ ОПЕРАТОР'+ exportToJSON)
-
-
-
-
-Export exportFromJSON = gson.fromJson(exportToJSON, Export.class)
-modules.sbpmImport.importBpm(exportFromJSON)
