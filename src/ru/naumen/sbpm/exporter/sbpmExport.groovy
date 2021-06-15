@@ -14,8 +14,6 @@ import ru.naumen.sbpm.model.*
 //import ru.naumen.sbpm.importer.*
 import ru.naumen.core.server.script.api.DbApi$Query
 import ru.naumen.metainfo.shared.ClassFqn
-import com.google.gson.Gson //+
-import com.google.gson.GsonBuilder
 import ru.naumen.core.server.script.spi.ScriptDtObject
 import ru.naumen.common.shared.utils.DateTimeInterval
 //Параметры------------------------------------------------------
@@ -191,23 +189,3 @@ Export export(def route = null){
 }
 //Основной блок -------------------------------------------------
 return ''
-
-/*
-import ru.naumen.core.server.script.api.DbApi$Query
-
-def parent = utils.get('metaStorage$2283201')
-def dict = [:]//['parent':parent]
-def mcStr = 'metaStorage$kase'
-String paramsString = dict.keySet().collect{
-        k->
-            return "${k} = :${k}" //type = :type
-    }.join(' and ')
-
-String whereString = paramsString ? "where ${paramsString}" : ""
-
-//return """from ${mcStr} ${whereString}"""
-//def query = api.db.query("""from ${mcStr} ${whereString}""")
-def query = api.db.query('from metaStorage$kase where parent = :parent')
-query.set('parent',parent)
-return query.list().size()
- */

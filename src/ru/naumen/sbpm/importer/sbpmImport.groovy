@@ -131,8 +131,9 @@ List<Attribute> importAttributes(List<Attribute> attrs, def clazzObj) {
             if(!attribute.isCreate){
                 attribute.objType = api.metainfo.getMetaClass(metaCode[0])?.getAttribute(metaCode[1])?.type?.code
             }
-            return attribute.isCreate ||
-                    attribute.type != attribute.objType
+            Boolean isRemoved = attribute.obj?.removed
+            return !isRemoved && (attribute.isCreate ||
+                    attribute.type != attribute.objType)
                     ? attribute
                     : null
     }
@@ -144,7 +145,10 @@ List<Status> importStates(List<Status> states, def clazzObj) {
             def statusObj = utils.get(*status.getSearcher())
             metaStorageUpdater(statusObj,status, clazzObj)
             List<String> metaCode = status.metaCode.split('@')
-            return api.metainfo.getMetaClass(metaCode[0]).workflow.getStates().code.contains(metaCode[1]) ? null : status
+            Boolean isRemoved = status.obj?.removed
+            return !isRemoved && (api.metainfo.getMetaClass(metaCode[0]).workflow.getStates().code.contains(metaCode[1]))
+                    ? null
+                    : status
     }
 }
 
@@ -234,7 +238,7 @@ def importAttrKaseToKase(List<AttrKaseToKase> listAttrKToK) {
             def prepare = getBpmElement(attrKTok.prepare)
             def targetKase = getBpmElement(attrKTok.targetKase)
             def targetAttr = getBpmElement(attrKTok.targetAttr)
-            def attrKToKObj = utils.get(*attrKTok.getSearcher(
+            def attrKToKObj = utils.findFirst(*attrKTok.getSearcher(
                     sourceKase,
                     sourceAttr,
                     action,
@@ -380,6 +384,7 @@ def importBpm(Export exportFromJSON, def route) {
         importActions(exportFromJSON.actions,route)
     }catch(e){
         bpmLogger(e.message, route)
+        logger.error("BPM IMPORT: ${e.message}",e)
         throw (e)
     }
     return route

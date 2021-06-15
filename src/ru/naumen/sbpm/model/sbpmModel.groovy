@@ -12,6 +12,7 @@ package ru.naumen.sbpm.model
 import ru.naumen.metainfo.shared.ClassFqn
 import ru.naumen.common.shared.utils.Color
 import ru.naumen.common.shared.utils.DateTimeInterval
+import ru.naumen.core.server.script.api.injection.InjectApi
 //Параметры------------------------------------------------------
 //Функции--------------------------------------------------------
 //Основной блок -------------------------------------------------
@@ -494,10 +495,9 @@ class File{
  * соответствие атрибутов
  * В ОМ это тип класса Action
  */
-
+@InjectApi
 class AttrKaseToKase {
-    //TODO: добавить mc ыефешс
-    static ClassFqn mc  = api.types.newClassFqn('action$attrKaseToKase') //new ClassFqn('action$attrKaseToKase')
+    static ClassFqn mc  = getApi().types.newClassFqn('action$attrKaseToKase') //new ClassFqn('action$attrKaseToKase')
     Clazz sourceKase
     Attribute sourceAttr
     // справочник actionType
@@ -614,7 +614,7 @@ class Route extends RouteAbstract{
                 resolutionCode : obj.resolutionCode.collect{
                     rc -> ResolutionCode.fromObjectLite(rc)
                 },
-                resultAttr: obj.resultAttr,
+                resultAttr: Attribute.fromObjectLite(obj.resultAttr),
                 baseKase: Clazz.fromObjectLite(obj.baseKase),
                 note : obj.note
         ) : null
