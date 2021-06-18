@@ -24,7 +24,6 @@ import ru.naumen.common.shared.utils.DateTimeInterval
  * @param mcStr метакласс экспортируемого справочника (строка)
  * @param parent родитель экспортируемого элемента справочника
  * @return список элементов каталога завернутый в ОМ
- * TODO: хвостовая рекурсия
  */
 
 List<CatalogsElement> exportCatalog(String mcStr, CatalogsElement parentEl = null){
@@ -39,7 +38,8 @@ List<CatalogsElement> exportCatalog(String mcStr, CatalogsElement parentEl = nul
                 def file =  el?.icon[0]
                 element.file = new File(
                         title: file.title,
-                        data: utils.readFileContent(file)
+                        data: utils.readFileContent(file),
+                        mimeType: file.mimeType
                 )
             }
             if(parentEl){
@@ -133,7 +133,7 @@ List<AttrKaseToKase> exportAttrKaseToKase(){
     }
 }
 /*
- * для выгрузки маршрутп
+ * для выгрузки маршрута
  * @return JSON для выгрузки маршрута
  */
 List<Action> exportActions(def route){
@@ -141,7 +141,7 @@ List<Action> exportActions(def route){
     return actions.collect{
         obj ->
             Action act = Action.fromObject(obj)
-            act.slaveActions = obj.slaveActions.collect{
+            act?.slaveActions = obj?.slaveActions.collect{
                 sa -> AttributeAction.fromObject(sa)
             }
             return act
@@ -174,7 +174,6 @@ Export export(def route = null){
                     //выгружаем "Соответствие атрибутов"
                     listAttrKaseToKase : exportAttrKaseToKase()
             ),
-            //TODO:вынести за создание
             //выгружаем маршрут
             route : Route.fromObject(route),
 

@@ -146,7 +146,8 @@ class Attribute extends MetaStorageAbstract{
     String description
     String objType
     String type
-    Boolean isCreate
+    Boolean isNotCreate
+    Boolean badMetaСode
 
     List getSearcher(def parent) {
         return [mc.toString(), [metaCode: metaCode, parent : parent]]
@@ -196,6 +197,10 @@ class Attribute extends MetaStorageAbstract{
 
     String getNotTypeString(){
         return """<li>Атрибут "${title}"(${code}). Тип атрибута (${objType}) не соответствует загружаемому (${type}).</li>"""
+    }
+
+    String getBadMetaCodeString(){
+        return """<li>Атрибут "${title}"(${code}). MetaCode атрибута (${metaCode}) не соответствует формату КЛАСС#КОД.</li>"""
     }
 }
 
@@ -487,7 +492,7 @@ ${message}."""
 class File{
     String title
     byte[] data
-    String contentType = 'image/png'
+    String mimeType
 
 }
 
