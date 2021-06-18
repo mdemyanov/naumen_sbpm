@@ -375,8 +375,7 @@ def importTemplates(List<Template> templates, def route){
             def sourceAttr = getBpmElement(template.sourceAttr)
             def resultAttr = getBpmElement(template.resultAttr)
             List resolutionCode = searchList(template.resolutionCode)
-            def templateObj = routeCreator(template, template.getCreator(route,kase,sourceAttr,resultAttr,resolutionCode))
-
+            routeCreator(template, template.getCreator(route,kase,sourceAttr,resultAttr,resolutionCode))
     }
 }
 

@@ -16,11 +16,20 @@ import ru.naumen.core.server.script.api.injection.InjectApi
 //Параметры------------------------------------------------------
 //Функции--------------------------------------------------------
 //Основной блок -------------------------------------------------
+
+/*
+ * Абстрактное представление экспортируемой сущьности
+ */
 abstract  class Bpm {
     ClassFqn mc
     def obj
     abstract List getSearcher()
 }
+
+/*
+ * Абстрактное представление сущьности объектной модели:
+ * класс, атрибут, статус
+ */
 abstract class MetaStorageAbstract extends Bpm{
     String metaCode
     String title
@@ -35,6 +44,10 @@ ${message}."""
     }
 }
 
+/*
+ * Абстрактное представление сотавляющей маршрута:
+ * маршрут, шаг, действие, атрибут
+ */
 abstract class  RouteAbstract extends  Bpm{
     String internalId
     String externalId
@@ -47,6 +60,9 @@ ${message}."""
     }
 }
 
+/*
+ * Объектная модель
+ */
 class SbpmModel {
     MetaStorage metaStorage
     Catalogs catalogs
@@ -54,6 +70,9 @@ class SbpmModel {
     List<AttrKaseToKase> listAttrKaseToKase
 }
 
+/*
+ * Экспортируемые сущьности
+ */
 class Export{
     SbpmModel sbpmModel
     Route route
@@ -63,13 +82,15 @@ class Export{
 
 
 /*
- * Объектная модель
+ * Классы
  */
-
 class MetaStorage {
     List<Clazz> clazzes
 }
 
+/*
+ * Класс
+ */
 class Clazz extends MetaStorageAbstract {
     List<Attribute> attributes
     List<Status> states
@@ -140,7 +161,9 @@ class Clazz extends MetaStorageAbstract {
     }
 }
 
-
+/*
+ * Атрибут
+ */
 class Attribute extends MetaStorageAbstract{
     String code
     String description
@@ -204,6 +227,9 @@ class Attribute extends MetaStorageAbstract{
     }
 }
 
+/*
+ * Статус
+ */
 class Status extends MetaStorageAbstract{
 
     String code //формат:registered
@@ -255,18 +281,19 @@ class Status extends MetaStorageAbstract{
 
 /*
  *  Справочники (опер.)
- * это пользовательский класс
- * Может сделать верхий клсс элемент справочника??
+ *  пользовательский класс
  */
-
 class Catalogs {
     List<ResolutionCode> resolutionCode
     List<Event> event
     List<StateEvent> eventChangeSt
 }
 
+/*
+ *  Код решения
+ */
 class ResolutionCode extends Bpm{
-    String code  //должен быть обязательный уникальным
+    String code
     String title
     String description
     CatalogsElement systemIcon
@@ -315,6 +342,9 @@ class ResolutionCode extends Bpm{
     }
 }
 
+/*
+ *  Событие
+ */
 class Event extends Bpm{
     String code
     String title
@@ -361,7 +391,9 @@ class Event extends Bpm{
     }
 }
 
-//наследование нужно для Action
+/*
+ *  Событие со статусом
+ */
 class StateEvent extends Event {
     List<Status> sourceState
     ResolutionCode sourceResult
@@ -414,7 +446,6 @@ class StateEvent extends Event {
 /*
  * Справочники(техн.)
  */
-
 class UserCatalogs {
     List<CatalogsElement> multiplySource //источник многоэкземплярности шагов
     List<CatalogsElement> prepare //Предварительная обработка параметров
@@ -497,7 +528,7 @@ class File{
 }
 
 /*
- * соответствие атрибутов
+ * Соответствие атрибутов
  * В ОМ это тип класса Action
  */
 @InjectApi
@@ -554,7 +585,6 @@ class AttrKaseToKase {
 
     static AttrKaseToKase fromObject(def obj){
         return obj ? new AttrKaseToKase(
-                //mc: obj.metaClass,
                 sourceKase : Clazz.fromObjectLite(obj.sourceKase),
                 sourceAttr : Attribute.fromObjectLite(obj.sourceAttr),
                 action : CatalogsElement.fromObjectLite(obj.action),
@@ -579,7 +609,6 @@ class AttrKaseToKase {
 /*
  * Маршрут
  */
-
 class Route extends RouteAbstract{
     List<ResolutionCode> resolutionCode
     Clazz baseKase
@@ -638,10 +667,10 @@ ${title}(${internalId})" метакласса ${mc?.code} возникла ош�
 ${message}."""
     }
 }
+
 /*
  * Шаблон шага
  */
-
 class Template extends  RouteAbstract{
     Route route
     //Атрибут "Тип шага"
@@ -753,6 +782,7 @@ class Template extends  RouteAbstract{
     }
 
 }
+
 /*
  * Объект
  */
@@ -766,13 +796,11 @@ class UniversalObj{
                 title: obj.title
         ) : null
     }
-
 }
 
 /*
  * Действие
  */
-
 class Action extends RouteAbstract{
     //Атрибут "Исходный шаблон"
     Template sourceTemplate
@@ -884,7 +912,6 @@ class Action extends RouteAbstract{
 /*
  * Действие с атрибутом
  */
-
 class AttributeAction extends  RouteAbstract{
     //Атрибут "Исходный атрибут"
     Attribute sourceAttr
