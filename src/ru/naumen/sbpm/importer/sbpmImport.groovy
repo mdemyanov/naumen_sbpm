@@ -391,6 +391,7 @@ def importActions(List<Action> actions){
             def sourceTemplate = getBpmElement(action.sourceTemplate)
             def sourceState = getBpmElement(action.sourceState)
             def sourceEvent = getBpmElement(action.sourceEvent)
+            def sourceResult = getBpmElement(action.sourceResult)
             def act = getBpmElement(action.action)
             def targetTemplate = getBpmElement(action?.targetTemplate)
             def targetState = getBpmElement(action?.targetState)
@@ -404,6 +405,7 @@ def importActions(List<Action> actions){
                     sourceTemplate,
                     sourceState,
                     sourceEvent,
+                    sourceResult,
                     act,
                     targetTemplate,
                     targetState,
