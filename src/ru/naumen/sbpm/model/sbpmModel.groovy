@@ -13,6 +13,8 @@ import ru.naumen.metainfo.shared.ClassFqn
 import ru.naumen.common.shared.utils.Color
 import ru.naumen.common.shared.utils.DateTimeInterval
 import ru.naumen.core.server.script.api.injection.InjectApi
+import ru.naumen.core.server.script.api.metainfo.MetaClassWrapper
+import ru.naumen.core.server.script.api.metainfo.AttributeWrapper
 //Параметры------------------------------------------------------
 //Функции--------------------------------------------------------
 //Основной блок -------------------------------------------------
@@ -46,12 +48,13 @@ ${message}."""
 
 /*
  * Абстрактное представление сотавляющей маршрута:
- * маршрут, шаг, действие, атрибут
+ * маршрут, шаг, действие, действие с атрибутом
  */
 abstract class  RouteAbstract extends  Bpm{
     String internalId
     String externalId
     String title
+    Boolean removed
 
     String getExceptionString(String message){
         return """Ошибка! При создании 
@@ -650,7 +653,8 @@ class Route extends RouteAbstract{
                 },
                 resultAttr: Attribute.fromObjectLite(obj.resultAttr),
                 baseKase: Clazz.fromObjectLite(obj.baseKase),
-                note : obj.note
+                note : obj.note,
+                removed : obj.removed
         ) : null
     }
 
@@ -671,7 +675,12 @@ ${message}."""
 /*
  * Шаблон шага
  */
+@InjectApi
 class Template extends  RouteAbstract{
+    static String mcCode = 'bpm$template'
+    static String additionalCode = 'additional'
+    String additional
+    //MetaClassWrapper mcWrapper = api.metainfo.getMetaClass('bpm$template')
     Route route
     //Атрибут "Тип шага"
     Clazz kase
@@ -720,7 +729,9 @@ class Template extends  RouteAbstract{
                 resolutionCode : resolutionCode,
                 resolutionTime : resolutionTime,
                 description : description,
-                subj: subj
+                subj: subj,
+                note: note,
+                removed : removed
         ]]
     }
 
@@ -751,8 +762,26 @@ class Template extends  RouteAbstract{
                 subj : obj.subj,
                 members : obj.members.collect{
                     empl -> UniversalObj.fromObject(empl)
-                }
+                },
+                removed : obj.removed,
+                additional:getAdditional(obj)
+
         ) : null
+    }
+
+     static String getAdditional(def obj){
+        if(!getApi().metainfo.getMetaClass(mcCode).attributeGroups.code.contains(additionalCode)){
+            throw new Exception("В типе Шаблон шага нет группы атрибутов с кодом ${additionalCode}")
+        }
+        List<AttributeWrapper> attrs = api.metainfo.getMetaClass(mcCode)?.getAttributeGroup(additionalCode).attributes
+        String res = ""
+        attrs.each {
+            attr ->
+                if(obj[attr.code]){
+                    res+= """<li>${attr.title}"(${attr.code}) — ${obj[attr.code].toString()}.</li> """
+                }
+        }
+        return "<ul> ${res} </ul>"
     }
 
     static Template fromObjectLite(def obj) {
@@ -872,7 +901,8 @@ class Action extends RouteAbstract{
                 isMultiplyStep : isMultiplyStep,
                 multHeadAttr : multHeadAttr,
                 multPrevAttr : multPrevAttr,
-                multStepAttr : multStepAttr
+                multStepAttr : multStepAttr,
+                removed : removed
         ]]
     }
 
@@ -897,8 +927,8 @@ class Action extends RouteAbstract{
                 multHeadAttr : Attribute.fromObjectLite(obj.multHeadAttr),
                 multPrevAttr : Attribute.fromObjectLite(obj.multPrevAttr),
                 multStepAttr : Attribute.fromObjectLite(obj.multStepAttr),
-
-                slaveActions : slaveActions
+                slaveActions : slaveActions,
+                removed : obj.removed
         ) : null
     }
 
@@ -947,7 +977,8 @@ class AttributeAction extends  RouteAbstract{
                 prepare : prepare,
                 targetAttr : targetAttr,
                 state : state,
-                mainAction : mainAction
+                mainAction : mainAction,
+                removed : removed
         ]]
     }
 
@@ -960,7 +991,8 @@ class AttributeAction extends  RouteAbstract{
                 action : CatalogsElement.fromObjectLite(obj.action),
                 prepare : CatalogsElement.fromObjectLite(obj.prepare),
                 targetAttr : Attribute.fromObjectLite(obj.targetAttr),
-                state : obj.state.toString()
+                state : obj.state.toString(),
+                removed: obj.removed
         ) : null
     }
 

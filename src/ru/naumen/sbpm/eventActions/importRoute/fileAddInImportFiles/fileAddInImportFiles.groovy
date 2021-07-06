@@ -1,0 +1,1 @@
+return sourceObject.relation.contains('bpm$route/attribute:importFiles') ? '' : 'Файл добавлен не в атрибут "Файлы импорта"'

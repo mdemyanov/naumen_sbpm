@@ -133,7 +133,7 @@ List<AttrKaseToKase> exportAttrKaseToKase(){
     }
 }
 /*
- * для выгрузки маршрута
+ * для выгрузки действий
  * @return JSON для выгрузки маршрута
  */
 List<Action> exportActions(def route){

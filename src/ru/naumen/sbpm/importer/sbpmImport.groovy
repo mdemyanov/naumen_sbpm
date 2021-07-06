@@ -376,6 +376,7 @@ def importTemplates(List<Template> templates, def route){
             def resultAttr = getBpmElement(template.resultAttr)
             List resolutionCode = searchList(template.resolutionCode)
             routeCreator(template, template.getCreator(route,kase,sourceAttr,resultAttr,resolutionCode))
+            utils.edit(template.obj, ['@comment': "BPM IMPORT: "+template.additional])
     }
 }
 
@@ -502,7 +503,7 @@ def importBpm(Export importFromJSON, def route) {
         }
         importRoute(importFromJSON.route, route)
         importTemplates(importFromJSON.templates, route)
-        importTemplatesInfo(importFromJSON.templates)
+        //importTemplatesInfo(importFromJSON.templates)
         importActions(importFromJSON.actions)
     }catch(e){
         bpmLogger(e.message, route)
