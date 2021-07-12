@@ -770,6 +770,7 @@ class Template extends  RouteAbstract{
     }
 
      static String getAdditional(def obj){
+         def aggregateTypes = ['aggregate', 'responsible']
         if(!getApi().metainfo.getMetaClass(mcCode).attributeGroups.code.contains(additionalCode)){
             throw new Exception("В типе Шаблон шага нет группы атрибутов с кодом ${additionalCode}")
         }
@@ -778,7 +779,11 @@ class Template extends  RouteAbstract{
         attrs.each {
             attr ->
                 if(obj[attr.code]){
-                    res+= """<li>${attr.title}"(${attr.code}) — ${obj[attr.code].toString()}.</li> """
+                    if(aggregateTypes.contains(attr.type.code)){
+                        res+= """<li>${attr.title} (${attr.code}) — ${obj[attr.code]?.title}.</li> """
+                    } else {
+                        res+= """<li>${attr.title} (${attr.code}) — ${obj[attr.code].toString()}.</li> """
+                    }
                 }
         }
         return "<ul> ${res} </ul>"
