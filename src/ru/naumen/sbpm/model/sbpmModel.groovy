@@ -13,7 +13,6 @@ import ru.naumen.metainfo.shared.ClassFqn
 import ru.naumen.common.shared.utils.Color
 import ru.naumen.common.shared.utils.DateTimeInterval
 import ru.naumen.core.server.script.api.injection.InjectApi
-import ru.naumen.core.server.script.api.metainfo.MetaClassWrapper
 import ru.naumen.core.server.script.api.metainfo.AttributeWrapper
 //Параметры------------------------------------------------------
 //Функции--------------------------------------------------------
@@ -678,7 +677,8 @@ ${message}."""
 @InjectApi
 class Template extends  RouteAbstract{
     static String mcCode = 'bpm$template'
-    static String additionalCode = 'additional'
+    //Группы атрибутов, информация о которых будет зафиксирована в комментарии к шагу
+    static List<String> GroupsCodes = ['additional']
     String additional
     //MetaClassWrapper mcWrapper = api.metainfo.getMetaClass('bpm$template')
     Route route
@@ -770,23 +770,26 @@ class Template extends  RouteAbstract{
     }
 
      static String getAdditional(def obj){
-         def aggregateTypes = ['aggregate', 'responsible']
-        if(!getApi().metainfo.getMetaClass(mcCode).attributeGroups.code.contains(additionalCode)){
-            throw new Exception("В типе Шаблон шага нет группы атрибутов с кодом ${additionalCode}")
-        }
-        List<AttributeWrapper> attrs = api.metainfo.getMetaClass(mcCode)?.getAttributeGroup(additionalCode).attributes
-        String res = ""
-        attrs.each {
-            attr ->
-                if(obj[attr.code]){
-                    if(aggregateTypes.contains(attr.type.code)){
-                        res+= """<li>${attr.title} (${attr.code}) — ${obj[attr.code]?.title}.</li> """
-                    } else {
-                        res+= """<li>${attr.title} (${attr.code}) — ${obj[attr.code].toString()}.</li> """
-                    }
-                }
-        }
-        return "<ul> ${res} </ul>"
+         return GroupsCodes.collect{
+             group ->
+                 def aggregateTypes = ['aggregate', 'responsible']
+                 if(!getApi().metainfo.getMetaClass(mcCode).attributeGroups.code.contains(group)){
+                     throw new Exception("В типе Шаблон шага нет группы атрибутов с кодом ${group}")
+                 }
+                 String res = ''
+                 List<AttributeWrapper> attrs = api.metainfo.getMetaClass(mcCode)?.getAttributeGroup(group).attributes
+                 attrs.each {
+                     attr ->
+                         if(obj[attr.code]){
+                             if(aggregateTypes.contains(attr.type.code)){
+                                 res+= """<li>${attr.title} (${attr.code}) — ${obj[attr.code]?.title}.</li> """
+                             } else {
+                                 res+= """<li>${attr.title} (${attr.code}) — ${obj[attr.code].toString()}.</li> """
+                             }
+                         }
+                 }
+                 return "Атрибуты из группы ${group} <ul> ${res} </ul>"
+         }.join('<br>')
     }
 
     static Template fromObjectLite(def obj) {

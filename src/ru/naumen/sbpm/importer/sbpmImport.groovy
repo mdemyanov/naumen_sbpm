@@ -13,7 +13,7 @@ import ru.naumen.sbpm.model.*
 import groovy.transform.Field
 
 @Field CreatorList creatorList = new  CreatorList()
-@Field List<String> attrsExceptions = ['systemAttachedFiles','@comment','@commentAuthor','@commentPrivate']
+@Field List<String> attrsExceptions = ['systemAttachedFiles','@comment','@commentAuthor','@commentPrivate','@isCommentPrivate']
 @Field Map<String,List<String>> attrsClazzExceptions =['comment': ['source','copiedToFrom']]
 
 /*
@@ -104,7 +104,7 @@ def importIcon(CatalogsElement element, def elementObj) {
 * @return список классов, при импорте которых возниклки проблемы
 */
 List<Clazz> importClazzes(List<Clazz> clazzes){
-    return clazzes.findResults {
+    return clazzes?.findResults {
         clazz ->
             return importClazz(clazz)
     }
@@ -130,7 +130,7 @@ Clazz importClazz(Clazz clazz, def parent = null) {
     def createStates = importStates(clazz.states, clazzObj)
 
     importActiveStates(clazz, clazzObj)
-    List<Clazz> kases = clazz.kases.findResults {
+    List<Clazz> kases = clazz.kases?.findResults {
         ks ->
             importClazz(ks, clazzObj)
     }
