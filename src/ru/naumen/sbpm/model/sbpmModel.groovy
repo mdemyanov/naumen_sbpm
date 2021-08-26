@@ -34,6 +34,7 @@ abstract  class Bpm {
 abstract class MetaStorageAbstract extends Bpm{
     String metaCode
     String title
+    Boolean removed
 
     abstract List getCreator(def parent = null)
     abstract Map getEditor()
@@ -109,7 +110,8 @@ class Clazz extends MetaStorageAbstract {
                 metaCode   : metaCode,
                 description: description,
                 title      : title,
-                parent: parent
+                parent: parent,
+                removed : removed
         ]]
     }
 
@@ -136,7 +138,8 @@ class Clazz extends MetaStorageAbstract {
                     st -> Status.fromObjectLite(st)
                 },
                 kases: kases,
-                description : obj.description
+                description : obj.description,
+                removed : obj.removed
         ) : null
     }
 
@@ -188,7 +191,8 @@ class Attribute extends MetaStorageAbstract{
                 code       : code,
                 description: description,
                 title      : title,
-                parent :parent
+                parent :parent,
+                removed : removed
         ]]
     }
 
@@ -205,7 +209,8 @@ class Attribute extends MetaStorageAbstract{
                 code : obj.code,
                 description : obj.description,
                 mc : obj.metaClass,
-                title: obj.title
+                title: obj.title,
+                removed : obj.removed
         ) : null
     }
 
@@ -247,7 +252,8 @@ class Status extends MetaStorageAbstract{
                 code       : code,
                 description: description,
                 title      : title,
-                parent :parent
+                parent :parent,
+                removed : removed
         ]]
     }
 
@@ -264,7 +270,8 @@ class Status extends MetaStorageAbstract{
                 code : obj.code,
                 title : obj.title,
                 description : obj.description,
-                mc : obj.metaClass
+                mc : obj.metaClass,
+                removed: obj.removed
         ) : null
     }
 

@@ -109,9 +109,10 @@ List<ResolutionCode> exportResolutionCode(){
  * @return список объектов завернутые в ОМ
  */
 List<Event> exportEvent(){
-    return utils.find('catalogs$event',[:]).collect{
-        event -> Event.fromObject(event)
-    }
+    return utils.find('catalogs$event',[:]).findAll{it.metaClass.toString() == 'catalogs$event'}
+            .collect{
+                event -> Event.fromObject(event)
+            }
 }
 /*
  * для выгрузки StateEvent
